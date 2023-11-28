@@ -93,7 +93,6 @@ class BigQueryInteractor:
 
         # Create a query job to extract data from the source table
         query_job = self.client.query(query)
-        print(query)
         # Write the query results to the destination table
         # job_config = bigquery.QueryJobConfig(destination=destination_table_ref)
         query_job.result()

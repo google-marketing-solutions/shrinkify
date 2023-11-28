@@ -8,8 +8,8 @@ _MODEL_PARAMETERS = {
     "topK": "40",
 }
 
-class VertexBatchPredictionHandler():
 
+class VertexBatchPredictionHandler():
     def __init__(self, dataset, destination_uri_prefix):
         self.text_model = _TEXT_MODEL
         self.dataset = dataset

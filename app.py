@@ -5,36 +5,52 @@ from google.cloud import bigquery
 from main import run
 from utils.bq import BigQueryInteractor
 
+_CHAR_COUNT_COL_NAME = 'Character Count'
+_SHORT_TITLE_COL_NAME = 'Short Title'
+_COLUMN_SELECT_HELP = 'Select relevant columns from the feed, from which Shrinkify will generate short titles. Select informative columns, where values vary between entries.'
 # Initialize the BigQuery client
 client = bigquery.Client()
 
 # Function to fetch all available datasets
+
+
 @st.cache_data
 def get_datasets():
     return st.session_state.bq_client.get_datasets()
 
 # Function to fetch tables within a dataset
+
+
 @st.cache_data
 def get_tables(dataset_id):
     return st.session_state.bq_client.get_tables(dataset_id)
 
 # Function to fetch column names from a table
+
+
 @st.cache_data
 def get_column_names(dataset_id, table_id):
     return st.session_state.bq_client.get_column_names(dataset_id, table_id)
 
 # Function to fetch random rows from the selected table
+
+
 def get_random_rows(dataset_id, table_id, selected_columns, num_rows=5):
     query = f"SELECT {', '.join(selected_columns)} FROM `{dataset_id}.{table_id}` ORDER BY RAND() LIMIT {num_rows}"
     results = st.session_state.bq_client.run_query(query)
     rows = [list(row.values()) for row in results]
     return rows
 
+
 def create_examples():
-    examples = get_random_rows(st.session_state.selected_dataset, st.session_state.selected_table, st.session_state.selected_columns)
+    examples = get_random_rows(st.session_state.selected_dataset,
+                               st.session_state.selected_table, st.session_state.selected_columns)
     # Create a DataFrame with the selected columns and add a "Short Title" column
-    st.session_state.df = pd.DataFrame(examples, columns=st.session_state.selected_columns)
-    st.session_state.df["Short Title"] = st.session_state.df["name"] # Initialize Short Title column
+    st.session_state.df = pd.DataFrame(
+        examples, columns=st.session_state.selected_columns)
+    st.session_state.df[_SHORT_TITLE_COL_NAME] = st.session_state.df.get(
+        "name", '')  # Initialize Short Title column
+
 
 def run_shrinkify():
     st.session_state.run_clicked = True
@@ -73,6 +89,7 @@ def initialize_session_state():
     if "run_clicked" not in st.session_state:
         st.session_state.run_clicked = False
 
+
 st.set_page_config(
     page_title="Shrinkify🤏",
     page_icon="🤏",
@@ -89,7 +106,7 @@ st.header("Shrinkify 🤏")
 initialize_session_state()
 
 if st.session_state.df is None:
-    
+
     # Step 1: Select industry and product type
     col1, col2 = st.columns(2)
     with col1:
@@ -97,35 +114,40 @@ if st.session_state.df is None:
 
     with col2:
         st.session_state.product_type = st.text_input("Product Type", value="")
-    
+
     # Step 2: Select a dataset
-    st.session_state.selected_dataset = st.selectbox("Select a BigQuery Dataset", get_datasets())
+    st.session_state.selected_dataset = st.selectbox(
+        "Select a BigQuery Dataset", get_datasets())
 
     if st.session_state.selected_dataset:
         # Step 3: Select a table from the chosen dataset
-        st.session_state.selected_table = st.selectbox("Select a Table from the Dataset", get_tables(st.session_state.selected_dataset))
+        st.session_state.selected_table = st.selectbox(
+            "Select a Table from the Dataset", get_tables(st.session_state.selected_dataset))
 
         if st.session_state.selected_table:
             # Step 4: Select Columns
-            st.session_state.selected_columns = st.multiselect("Select Relevant Columns from the Table", get_column_names(st.session_state.selected_dataset, st.session_state.selected_table))
+            st.session_state.selected_columns = st.multiselect("Select Relevant Columns from the Table", get_column_names(
+                st.session_state.selected_dataset, st.session_state.selected_table),help=_COLUMN_SELECT_HELP)
 
             if st.session_state.selected_columns:
                 # Step 5: Create Examples
-                    st.button("Create Examples",on_click=create_examples)
-                    
+                st.button("Create Examples", on_click=create_examples)
+
 elif not st.session_state.run_clicked:
-    edited_df = st.data_editor(st.session_state.df, key="examples_table",disabled=(st.session_state.selected_columns),use_container_width=True)
-    edited_df['Character Count'] = edited_df['Short Title'].apply(lambda x: len(x))
-    
-    cc_df = edited_df[["Character Count"]]
+    edited_df = st.data_editor(st.session_state.df, key="examples_table", disabled=(
+        st.session_state.selected_columns), use_container_width=True)
+    edited_df[_CHAR_COUNT_COL_NAME] = edited_df[_SHORT_TITLE_COL_NAME].apply(
+        lambda x: len(x))
+
+    cc_df = edited_df[[_CHAR_COUNT_COL_NAME]]
     st.write(
-    f'<div style="display: flex; justify-content: center;">{cc_df.to_html()} </div>',
-    unsafe_allow_html=True
+        f'<div style="display: flex; justify-content: center;">{cc_df.to_html()} </div>',
+        unsafe_allow_html=True
     )
 
     st.session_state.edited_df = edited_df
     st.text("")
     st.button("RUN", on_click=run_shrinkify)
-        
+
 else:
     st.write("Shrinkify Running")

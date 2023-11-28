@@ -4,7 +4,8 @@ from utils.config import Config
 from utils.bq import BigQueryInteractor
 from utils.vertex import VertexBatchPredictionHandler
 
-_MAX_ROW_PER_SUB_TABLE = 30000
+
+_MAX_ROW_PER_SUB_TABLE = 25000
 _SHORT_TITLE_LENGTH = 28
 _SUB_TABLE_PREFIX = 'sub_table_'
 _SUB_RESULTS_TABLE_PREFIX = 'results_'
@@ -17,7 +18,10 @@ When you're done, check the length of the suggested {config.product_type} title,
 """
     for example in examples:
             short_title = example.pop('Short Title')
-            # example.pop('Character Count')
+            try:
+                example.pop('Character Count')
+            except:
+                pass
             prompt += f"""
 Context:
 {str(example)}
@@ -40,22 +44,18 @@ def create_prediction_sub_tables(config, bq):
         end_index = (sub_table + 1) * _MAX_ROW_PER_SUB_TABLE - 1
         bq.extract_and_save_to_new_table(prompt_base, config.source_dataset, config.source_table,
                                          config.output_dataset, table_name, config.columns, start_index, end_index)
+        print(f'Created sub_table_{sub_table}')
 
-
-def init_bulk_predictions(config, bq):
+def init_first_bulk_prediction_job(config, bq):
     # TODO: b/313370000
     project_id = bq.get_project_id()
-    source_dataset = config.source_dataset
     output_dataset = config.output_dataset
-    num_sub_tables = config.num_sub_tables
-
-    for i in range(num_sub_tables):
-        print('start prediction ' + str(i))
-        dataset = f'bq://{project_id}.{source_dataset}.{_SUB_TABLE_PREFIX}{i}'
-        destination_uri_prefix = f'bq://{project_id}.{output_dataset}.{_SUB_RESULTS_TABLE_PREFIX}{i}'
-        batch_predictions = VertexBatchPredictionHandler(dataset, destination_uri_prefix)
-        batch_predictions.init_batch_prediction()
-        print('start prediction ' + str(i))
+    
+    print('start prediction ' + str(0))
+    dataset = f'bq://{project_id}.{output_dataset}.{_SUB_TABLE_PREFIX}0'
+    destination_uri_prefix = f'bq://{project_id}.{output_dataset}.{_SUB_RESULTS_TABLE_PREFIX}0'
+    batch_predictions = VertexBatchPredictionHandler(dataset, destination_uri_prefix)
+    batch_predictions.init_batch_prediction()
 
 
 def run(config_params): 
@@ -66,7 +66,7 @@ def run(config_params):
     bq.create_dataset(config.output_dataset)
     
     create_prediction_sub_tables(config, bq)
-    init_bulk_predictions(config, bq)
+    init_first_bulk_prediction_job(config, bq)
 
 
 # For testing purposes: 
