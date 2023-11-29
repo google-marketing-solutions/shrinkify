@@ -1,0 +1,13 @@
+{
+    "name": "Shrinkify",
+    "options": {
+      "allow-unauthenticated": false,
+      "memory": "512Mi",
+      "cpu": "1"
+    },
+    "hooks": {
+        "prebuild": {
+          "commands": ["chmod 777 ./setup/prebuild.sh", "./setup/prebuild.sh"]
+        }
+    }
+  }

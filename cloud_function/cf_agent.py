@@ -23,6 +23,10 @@ _OUTPUT_TABLE = 'shrinkify_final'
 @functions_framework.cloud_event
 def cloud_agent(cloudevent):
     resource_name = log_and_get_resource(cloudevent)
+    if not resource_name:
+        print("Idle trigger.")
+        return 0
+
     dataset_id = resource_name.split('/')[3]
     results_table_id = resource_name.split('/')[-1]
     current_table_index = int(results_table_id.split('results_')[1])
@@ -93,7 +97,6 @@ def log_and_get_resource(cloudevent):
     try:
         rows = int(payload['metadata']['tableDataChange']['insertedRowsCount'])
     except:
-        print("Idle trigger.")
         return 0
     
     resource_name = payload.get('resourceName')
