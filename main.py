@@ -1,4 +1,17 @@
-import pandas as pd
+# Copyright 2023 Google LLC.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 import json
 from utils.config import Config
 from utils.bq import BigQueryInteractor
@@ -25,7 +38,7 @@ When you're done, check the length of the suggested {config.product_type} title,
             prompt += f"""
 Context:
 {str(example)}
-Short Title: {short_title}
+Short Title: {short_title}-=
 """
     
     return prompt
@@ -67,22 +80,3 @@ def run(config_params):
     
     create_prediction_sub_tables(config, bq)
     init_first_bulk_prediction_job(config, bq)
-
-
-# For testing purposes: 
-# if __name__ == "__main__":
-#     # Define the column names
-#     columns = ["name", "country_id", "city_name", "address", "accommodation_type"]
-
-#     json_file_path = './examples.json'
-
-#     # Read the JSON file into a DataFrame
-#     df = pd.read_json(json_file_path)
-
-#     conf_dict = {'industry': 'Hotel Booking ',
-#                 'product_type': 'Hotel',
-#                 'source_dataset': 'batch_test',
-#                 'source_table': 'Test Feed',
-#                 'columns': columns,
-#                 'examples_df': df}
-#     run(conf_dict)
