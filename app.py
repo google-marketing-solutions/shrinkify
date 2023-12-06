@@ -72,6 +72,7 @@ def run_shrinkify():
     conifg_params = {
         "industry": st.session_state.industry,
         "product_type": st.session_state.product_type,
+        "char_limit": st.session_state.char_limit,
         "source_dataset": st.session_state.selected_dataset,
         "source_table": st.session_state.selected_table,
         "columns": st.session_state.selected_columns,
@@ -101,7 +102,8 @@ def initialize_session_state():
         st.session_state.edited_df = None
     if "run_clicked" not in st.session_state:
         st.session_state.run_clicked = False
-
+    if "char_limit" not in st.session_state:
+        st.session_state.char_limit = 0
 
 st.set_page_config(
     page_title="Shrinkify🤏",
@@ -121,13 +123,15 @@ initialize_session_state()
 if st.session_state.df is None:
 
     # Step 1: Select industry and product type
-    col1, col2 = st.columns(2)
+    col1, col2, col3 = st.columns(3)
     with col1:
         st.session_state.industry = st.text_input("Industry", value="")
 
     with col2:
         st.session_state.product_type = st.text_input("Product Type", value="")
 
+    with col3:
+        st.session_state.char_limit = st.number_input(label=":rainbow[Max Length]", max_value=60, value=30)
     # Step 2: Select a dataset
     st.session_state.selected_dataset = st.selectbox(
         "Select a BigQuery Dataset", get_datasets())

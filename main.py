@@ -19,15 +19,14 @@ from utils.vertex import VertexBatchPredictionHandler
 
 
 _MAX_ROW_PER_SUB_TABLE = 25000
-_SHORT_TITLE_LENGTH = 28
 _SUB_TABLE_PREFIX = 'sub_table_'
 _SUB_RESULTS_TABLE_PREFIX = 'results_'
 
 def create_prompt_base(config):
     examples = json.loads(config.examples_df.to_json(orient='records'))
     
-    prompt = f"""You are a leading digital marketer working for a top {config.industry} company. You are an expert at generating high-performing short search ad titles ensuring that the ad titles only contain the important {config.product_type} information while keeping the title as short as possible and always less than  {_SHORT_TITLE_LENGTH} characters long. A user needs your help to shorten these {config.product_type} titles. Generate Short Title using the given "Context".
-When you're done, check the length of the suggested {config.product_type} title, and if it's longer than {_SHORT_TITLE_LENGTH} characters try to make it even shorter by removing more words.
+    prompt = f"""You are a leading digital marketer working for a top {config.industry} company. You are an expert at generating high-performing short search ad titles ensuring that the ad titles only contain the important {config.product_type} information while keeping the title as short as possible and always less than  {config.char_limit} characters long. A user needs your help to shorten these {config.product_type} titles. Generate Short Title using the given "Context".
+When you're done, check the length of the suggested {config.product_type} title, and if it's longer than {config.char_limit} characters try to make it even shorter by removing more words.
 """
     for example in examples:
             short_title = example.pop('Short Title')
@@ -38,7 +37,7 @@ When you're done, check the length of the suggested {config.product_type} title,
             prompt += f"""
 Context:
 {str(example)}
-Short Title: {short_title}-=
+Short Title: {short_title}
 """
     
     return prompt

@@ -17,9 +17,10 @@ _OUTPUT_DATASET = 'shrinkify_output'
 _OUTPUT_TABLE = 'shrinkify_final'
 
 class Config:
-    def __init__(self, industry, product_type, source_dataset, source_table, columns, examples_df) -> None:
+    def __init__(self, industry, product_type, char_limit, source_dataset, source_table, columns, examples_df) -> None:
         self.industry = industry
         self.product_type = product_type
+        self.char_limit = char_limit
         self.source_dataset = source_dataset
         self.source_table = source_table
         self.columns = columns
@@ -43,6 +44,7 @@ class Config:
         return cls(
             config_dict.get('industry'),
             config_dict.get('product_type'),
+            config_dict.get('char_limit'),
             config_dict.get('source_dataset'),
             config_dict.get('source_table'),
             config_dict.get('columns'),
@@ -53,6 +55,7 @@ class Config:
         return {
             'industry': self.industry,
             'product_type': self.product_type,
+            'char_limit': self.char_limit,
             'source_dataset': self.source_dataset,
             'source_table': self.source_table,
             'output_dataset': self.output_dataset,
