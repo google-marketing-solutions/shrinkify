@@ -24,7 +24,9 @@ Shrinkify uses the VertexAI PaLM API to shorten long headlines to a certain numb
 
 ## Usage
 
-1. Enter your industry and product type(i.e. Hotel booking, Hotel).
+1. Enter industry and product type (i.e. Hotel booking, Hotel).
+
+1. Choose the character limit you need (Important: It is recommended to use a slightly lower limit than you require. If you need a maximum of 30 chars, use a limit of 28)
 
 1. Choose the dataset to which you uploaded your feed, and choose your feed.
 
@@ -32,7 +34,7 @@ Shrinkify uses the VertexAI PaLM API to shorten long headlines to a certain numb
 
 1. Click "Create Examples"
 
-1. Shrinkify has randomly selected 5 entries from your feed. Add short titles for the examples and make sure the length is less then 28 characters.
+1. Shrinkify has randomly selected 5 entries from your feed. Add short titles for the examples and make sure the length is less then your selected characters limit.
 
 1. Click "RUN"
 
@@ -41,7 +43,8 @@ Shrinkify uses the VertexAI PaLM API to shorten long headlines to a certain numb
 
 ## Costs
 
-Costs are derived from GCP services usage and may vary dependaing on the frequancy of and the size of the feed .
+Costs are derived from GCP services usage and may vary dependaing on the frequancy of and the size of the feed.
+The *approximate* cost is ~0.4$ per 1000 rows in your feed.
 
 ## Disclaimer
 This is not an officially supported Google product.
