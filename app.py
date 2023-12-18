@@ -131,7 +131,8 @@ if st.session_state.df is None:
         st.session_state.product_type = st.text_input("Product Type", value="")
 
     with col3:
-        st.session_state.char_limit = st.number_input(label=":rainbow[Max Length]", max_value=60, value=30)
+        st.session_state.char_limit = st.number_input(
+            label=":rainbow[Max Length]", max_value=60, value=30, help="It is recommended to use a slightly lower limit than you require. i.e. if you need a maximum of 30 chars, use a limit of 28")
     # Step 2: Select a dataset
     st.session_state.selected_dataset = st.selectbox(
         "Select a BigQuery Dataset", get_datasets())
@@ -151,6 +152,7 @@ if st.session_state.df is None:
                 st.button("Create Examples", on_click=create_examples)
 
 elif not st.session_state.run_clicked:
+    st.write(f'Shrinkify has randomly selected 5 entries from your feed.  \n Change their short titles and make sure they are shorter then your selected characters limit of :blue[{st.session_state.char_limit}].  \n Once you are done click the "RUN" button.')
     edited_df = st.data_editor(st.session_state.df, key="examples_table", disabled=(
         st.session_state.selected_columns), use_container_width=True)
     edited_df[_CHAR_COUNT_COL_NAME] = edited_df[_SHORT_TITLE_COL_NAME].apply(
