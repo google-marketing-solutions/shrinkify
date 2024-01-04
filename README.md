@@ -12,6 +12,7 @@ Shrinkify uses the VertexAI PaLM API to shorten long headlines to a certain numb
 
 
 ## Installation
+### Using Cloud Run Button
 
 1. Click the big blue button to deploy:
    
@@ -20,6 +21,23 @@ Shrinkify uses the VertexAI PaLM API to shorten long headlines to a certain numb
 1. Choose your designated GCP project and desired region ().
 
 1. Once installation is finished you will recieve your tool's URL. Save it.
+
+### Using Terraform
+1. In your cloud project, open the cloud shell
+
+1. Clone this repository 
+   `git clone <<ADD>>`
+
+1. cd into the cloned directory
+   `cd shrinkify`
+
+1. Grant permissions to deployment script
+   `chmod 777 setup/deploy.sh`
+
+1. Run deployment script
+   `./setup/deploy.sh deploy_all`
+
+1. Once deployment is completed go "Cloud Run" and find the service called "shrinkify_service"
 
 
 ## Usage

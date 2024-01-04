@@ -12,14 +12,35 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+project_number=$(gcloud projects describe ${GOOGLE_CLOUD_PROJECT} --format="value(projectNumber)")
+service_account="serviceAccount:${project_number}-compute@developer.gserviceaccount.com"
+cf_name="shrinkify-cf"
+
 echo "Setting Project ID: ${GOOGLE_CLOUD_PROJECT}"
 gcloud config set project ${GOOGLE_CLOUD_PROJECT}
 
+echo "Enabling container deployment..."
+gcloud auth configure-docker
+
 echo "Enabling APIs..."
-gcloud services enable artifactregistry.googleapis.com cloudbuild.googleapis.com cloudfunctions.googleapis.com aiplatform.googleapis.com pubsub.googleapis.com eventarc.googleapis.com bigquery.googleapis.com compute.googleapis.com
+gcloud services enable artifactregistry.googleapis.com \
+ run.googleapis.com \
+ iamcredentials.googleapis.com \
+ cloudbuild.googleapis.com \
+ cloudfunctions.googleapis.com \
+ aiplatform.googleapis.com \
+ pubsub.googleapis.com \
+ eventarc.googleapis.com \
+ bigquery.googleapis.com \
+ compute.googleapis.com
+
+echo "Granting service account eventarc permissions..."
+gcloud projects add-iam-policy-binding ${GOOGLE_CLOUD_PROJECT} \
+    --member=$service_account \
+    --role=roles/eventarc.eventReceiver
 
 echo "Creating cloud function..."
-gcloud functions deploy shrinkify-cloud-agent \
+gcloud functions deploy $cf_name \
 --gen2 \
 --region=us-central1 \
 --runtime=python39 \
@@ -30,4 +51,10 @@ gcloud functions deploy shrinkify-cloud-agent \
 --trigger-event-filters="serviceName=bigquery.googleapis.com" \
 --trigger-event-filters="methodName=google.cloud.bigquery.v2.JobService.InsertJob" \
 --trigger-event-filters-path-pattern="resourceName=/projects/${GOOGLE_CLOUD_PROJECT}/datasets/shrinkify_output/tables/results_*" \
---timeout=3600s 
+--timeout=520s 
+
+echo "Setting service account permissions..."
+gcloud run services add-iam-policy-binding $cf_name \
+  --member=$service_account \
+  --role='roles/run.invoker' \
+  --region=${GOOGLE_CLOUD_REGION}
