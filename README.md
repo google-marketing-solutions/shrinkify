@@ -20,7 +20,7 @@ Shrinkify uses the VertexAI PaLM API to shorten long headlines to a certain numb
 
 1. Choose your designated GCP project and desired region ().
 
-1. Once installation is finished you will recieve your tool's URL. Save it.
+1. Once installation is finished you will receive your tool's URL. Save it.
 
 ### Using Terraform
 1. In your cloud project, open the cloud shell
@@ -52,16 +52,16 @@ Shrinkify uses the VertexAI PaLM API to shorten long headlines to a certain numb
 
 1. Click "Create Examples"
 
-1. Shrinkify has randomly selected 5 entries from your feed. Add short titles for the examples and make sure the length is less then your selected characters limit.
+1. Shrinkify has randomly selected 5 entries from your feed. Add short titles for the examples and make sure the length is less than your selected characters limit.
 
 1. Click "RUN"
 
-1. Allow the tool some time to run. The final results feed with the short titles will be add to table called "shrinkify_final" in a dataset called "shrinkify_output".
+1. Allow the tool some time to run. The final results feed with the short titles will be added to table called "shrinkify_final" in a dataset called "shrinkify_output".
 
 
 ## Costs
 
-Costs are derived from GCP services usage and may vary dependaing on the frequancy of and the size of the feed.
+Costs are derived from GCP services usage and may vary depending on the frequency of and the size of the feed.
 The *approximate* cost is ~0.4$ per 1000 rows in your feed.
 
 ## Disclaimer
